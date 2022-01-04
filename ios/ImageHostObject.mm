@@ -52,18 +52,8 @@ bool isFlipped(UIImageOrientation orientation) {
 
 jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& propNameId) {
   auto propName = propNameId.utf8(runtime);
-  auto funcName = "Image." + propName;
   
-  if (propName == "toString") {
-    auto toString = [this] (jsi::Runtime& runtime, const jsi::Value&, const jsi::Value*, size_t) -> jsi::Value {
-      auto width = image.size.width;
-      auto height = image.size.height;
-      
-      NSMutableString* string = [NSMutableString stringWithFormat:@"%f x %f Photo", width, height];
-      return jsi::String::createFromUtf8(runtime, string.UTF8String);
-    };
-    return jsi::Function::createFromHostFunction(runtime, jsi::PropNameID::forUtf8(runtime, "toString"), 0, toString);
-  }
+  // -------- Props --------
   
   if (propName == "width") {
     return jsi::Value((double) image.size.width);
@@ -86,13 +76,42 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
     return jsi::Value(isFlipped(image.imageOrientation));
   }
   
+  if (propName == "data") {
+    
+  }
+  
+  // -------- Functions --------
+  
   if (propName == "flip") {
-    auto flip = [this] (jsi::Runtime& runtime, const jsi::Value&, const jsi::Value*, size_t) -> jsi::Value {
+    auto flip = [this] (jsi::Runtime& runtime,
+                        const jsi::Value&,
+                        const jsi::Value*,
+                        size_t) -> jsi::Value {
       auto flippedImage = [image imageWithHorizontallyFlippedOrientation];
       auto newHostObject = std::make_shared<ImageHostObject>(flippedImage);
       return jsi::Object::createFromHostObject(runtime, newHostObject);
     };
-    return jsi::Function::createFromHostFunction(runtime, jsi::PropNameID::forUtf8(runtime, "flip"), 0, flip);
+    return jsi::Function::createFromHostFunction(runtime,
+                                                 jsi::PropNameID::forUtf8(runtime, "flip"),
+                                                 0,
+                                                 flip);
+  }
+  
+  if (propName == "toString") {
+    auto toString = [this] (jsi::Runtime& runtime,
+                            const jsi::Value&,
+                            const jsi::Value*,
+                            size_t) -> jsi::Value {
+      auto width = image.size.width;
+      auto height = image.size.height;
+      
+      NSMutableString* string = [NSMutableString stringWithFormat:@"%f x %f Photo", width, height];
+      return jsi::String::createFromUtf8(runtime, string.UTF8String);
+    };
+    return jsi::Function::createFromHostFunction(runtime,
+                                                 jsi::PropNameID::forUtf8(runtime, "toString"),
+                                                 0,
+                                                 toString);
   }
   
   return jsi::Value::undefined();
