@@ -30,8 +30,25 @@ export interface Image {
   readonly data: Uint8Array;
   /**
    * Horizontally flips ("mirror") the Image and returns the new copy.
+   *
+   * @example
+   * ```ts
+   * console.log(image.isFlipped) // false
+   * const flippedImage = image.flip()
+   * console.log(flippedImage.isFlipped) // true
+   * ```
    */
   flip(): Image;
+  /**
+   * Writes the Image to the given file path.
+   * @param filePath The file path to save the Image to. File extension should either be `.png` or `.jpg`.
+   *
+   * @example
+   * ```ts
+   * await image.save('file:///Users/Marc/profile-picture.png')
+   * ```
+   */
+  save(filePath: string): Promise<void>;
   /**
    * Returns a string-representation of the Image useful for debugging.
    */

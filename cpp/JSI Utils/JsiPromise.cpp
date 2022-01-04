@@ -8,7 +8,13 @@ namespace JsiPromise {
 
 using namespace facebook;
 
-jsi::Value createPromise(jsi::Runtime& runtime, std::shared_ptr<react::CallInvoker> callInvoker, std::function<void(std::shared_ptr<Promise>)> func) {
+jsi::Value PromiseVendor::createPromise(std::function<void(std::shared_ptr<Promise>)> func) {
+  if (_runtime == nullptr) {
+    throw new std::runtime_error("Runtime was null!");
+  }
+  auto& runtime = *_runtime;
+  auto callInvoker = _callInvoker;
+  
   // get Promise constructor
   auto promiseCtor = runtime.global().getPropertyAsFunction(runtime, "Promise");
   
@@ -31,7 +37,7 @@ jsi::Value createPromise(jsi::Runtime& runtime, std::shared_ptr<react::CallInvok
         resolve->call(runtime, *valueShared);
       });
     };
-    auto rejectWrapper = [reject, &runtime, callInvoker](std::string& errorMessage) -> void {
+    auto rejectWrapper = [reject, &runtime, callInvoker](const std::string& errorMessage) -> void {
       auto error = jsi::JSError(runtime, errorMessage);
       auto errorShared = std::make_shared<jsi::JSError>(error);
       callInvoker->invokeAsync([reject, &runtime, errorShared]() -> void {

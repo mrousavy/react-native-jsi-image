@@ -35,22 +35,25 @@ RCT_EXPORT_MODULE()
   return dispatch_queue_create("jsi-image-loader-queue", DISPATCH_QUEUE_CONCURRENT);
 }
 
-static void install(jsi::Runtime& jsiRuntime, std::shared_ptr<react::CallInvoker> callInvoker)
+static void install(jsi::Runtime* jsiRuntime, std::shared_ptr<react::CallInvoker> callInvoker)
 {
+  auto promiseVendor = std::make_shared<JsiPromise::PromiseVendor>(jsiRuntime, callInvoker);
+  auto& runtime = *jsiRuntime;
+  
   // jsiImageLoadFromFile(filePath)
-  auto jsiImageLoadFromFile = jsi::Function::createFromHostFunction(jsiRuntime,
-                                                                    jsi::PropNameID::forAscii(jsiRuntime, "jsiImageLoadFromFile"),
+  auto jsiImageLoadFromFile = jsi::Function::createFromHostFunction(runtime,
+                                                                    jsi::PropNameID::forAscii(runtime, "jsiImageLoadFromFile"),
                                                                     1,
-                                                                    [callInvoker](jsi::Runtime& runtime,
-                                                                                  const jsi::Value& thisValue,
-                                                                                  const jsi::Value* arguments,
-                                                                                  size_t count) -> jsi::Value {
+                                                                    [callInvoker, promiseVendor](jsi::Runtime& runtime,
+                                                                                                 const jsi::Value& thisValue,
+                                                                                                 const jsi::Value* arguments,
+                                                                                                 size_t count) -> jsi::Value {
     if (count != 1) {
       throw jsi::JSError(runtime, "jsiImageLoadFromFile(..) expects one argument (string)!");
     }
     auto string = arguments[0].asString(runtime).utf8(runtime);
     
-    auto promise = JsiPromise::createPromise(runtime, callInvoker, [&runtime, string](std::shared_ptr<JsiPromise::Promise> promise) -> void {
+    auto promise = promiseVendor->createPromise([&runtime, promiseVendor, string](std::shared_ptr<JsiPromise::Promise> promise) -> void {
       dispatch_async([JsiImage queue], ^{
         auto path = [NSString stringWithUTF8String:string.c_str()];
         
@@ -61,30 +64,30 @@ static void install(jsi::Runtime& jsiRuntime, std::shared_ptr<react::CallInvoker
           return;
         }
         
-        auto instance = std::make_shared<ImageHostObject>(image);
+        auto instance = std::make_shared<ImageHostObject>(image, promiseVendor);
         // success! Image loaded.
         promise->resolve(jsi::Object::createFromHostObject(runtime, instance));
       });
     });
     return promise;
   });
-  jsiRuntime.global().setProperty(jsiRuntime, "jsiImageLoadFromFile", std::move(jsiImageLoadFromFile));
+  runtime.global().setProperty(runtime, "jsiImageLoadFromFile", std::move(jsiImageLoadFromFile));
   
   
   // jsiImageLoadFromUrl(filePath)
-  auto jsiImageLoadFromUrl = jsi::Function::createFromHostFunction(jsiRuntime,
-                                                                   jsi::PropNameID::forAscii(jsiRuntime, "jsiImageLoadFromUrl"),
+  auto jsiImageLoadFromUrl = jsi::Function::createFromHostFunction(runtime,
+                                                                   jsi::PropNameID::forAscii(runtime, "jsiImageLoadFromUrl"),
                                                                    1,
-                                                                   [callInvoker](jsi::Runtime& runtime,
-                                                                                 const jsi::Value& thisValue,
-                                                                                 const jsi::Value* arguments,
-                                                                                 size_t count) -> jsi::Value {
+                                                                   [callInvoker, promiseVendor](jsi::Runtime& runtime,
+                                                                                                const jsi::Value& thisValue,
+                                                                                                const jsi::Value* arguments,
+                                                                                                size_t count) -> jsi::Value {
     if (count != 1) {
       throw jsi::JSError(runtime, "jsiImageLoadFromUrl(..) expects one argument (string)!");
     }
     auto string = arguments[0].asString(runtime).utf8(runtime);
     
-    auto promise = JsiPromise::createPromise(runtime, callInvoker, [&runtime, string](std::shared_ptr<JsiPromise::Promise> promise) -> void {
+    auto promise = promiseVendor->createPromise([&runtime, promiseVendor, string](std::shared_ptr<JsiPromise::Promise> promise) -> void {
       dispatch_async([JsiImage queue], ^{
         auto url = [NSString stringWithUTF8String:string.c_str()];
         auto image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:url]]];
@@ -94,14 +97,14 @@ static void install(jsi::Runtime& jsiRuntime, std::shared_ptr<react::CallInvoker
           return;
         }
         
-        auto instance = std::make_shared<ImageHostObject>(image);
+        auto instance = std::make_shared<ImageHostObject>(image, promiseVendor);
         // success! Image loaded.
         promise->resolve(jsi::Object::createFromHostObject(runtime, instance));
       });
     });
     return promise;
   });
-  jsiRuntime.global().setProperty(jsiRuntime, "jsiImageLoadFromUrl", std::move(jsiImageLoadFromUrl));
+  runtime.global().setProperty(runtime, "jsiImageLoadFromUrl", std::move(jsiImageLoadFromUrl));
 }
 
 - (void)setup
@@ -115,7 +118,7 @@ static void install(jsi::Runtime& jsiRuntime, std::shared_ptr<react::CallInvoker
     return;
   }
   
-  install(*(jsi::Runtime *)cxxBridge.runtime, self.bridge.jsCallInvoker);
+  install((jsi::Runtime *)cxxBridge.runtime, self.bridge.jsCallInvoker);
 }
 
 - (void)setBridge:(RCTBridge *)bridge

@@ -7,6 +7,8 @@ import {
   loadImageFromUrl,
 } from 'react-native-jsi-image';
 
+const TEST_PATH = '/tmp/test.png';
+
 export default function App() {
   React.useEffect(() => {
     const interval = setInterval(async () => {
@@ -28,6 +30,14 @@ export default function App() {
           flipped.isFlipped ? 'flipped' : 'normal'
         })`
       );
+
+      console.log(`saving to "${TEST_PATH}"...`);
+      await image.save(TEST_PATH);
+      console.log(`saved to "${TEST_PATH}"!`);
+
+      console.log(`loading from "${TEST_PATH}"...`);
+      const fromDisk = await loadImageFromFile(TEST_PATH);
+      console.log(`loaded ${fromDisk.toString()} image from "${TEST_PATH}"!`);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
