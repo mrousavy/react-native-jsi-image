@@ -10,11 +10,16 @@ export interface Image {
    */
   readonly height: number;
   /**
-   * Whether the image is mirrored/horizontally flipped, or not.
+   * Whether the image is horizontally flipped ("mirrored"), or not.
    */
-  readonly isMirrored: boolean;
+  readonly isFlipped: boolean;
   /**
    * The Image's orientation.
    */
   readonly orientation: Orientation;
+
+  /**
+   * Horizontally flips ("mirror") the Image and returns the new copy.
+   */
+  flip(): Image;
 }

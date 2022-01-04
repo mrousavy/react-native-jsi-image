@@ -38,7 +38,7 @@ NSString* imageOrientationToString(UIImageOrientation orientation) {
   }
 }
 
-bool isMirrored(UIImageOrientation orientation) {
+bool isFlipped(UIImageOrientation orientation) {
   switch (orientation) {
     case UIImageOrientationUpMirrored:
     case UIImageOrientationDownMirrored:
@@ -78,8 +78,17 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
     return jsi::String::createFromUtf8(runtime, string.UTF8String);
   }
   
-  if (propName == "isMirrored") {
-    return jsi::Value(isMirrored(image.imageOrientation));
+  if (propName == "isFlipped") {
+    return jsi::Value(isFlipped(image.imageOrientation));
+  }
+  
+  if (propName == "flip") {
+    auto flip = [this] (jsi::Runtime& runtime, const jsi::Value&, const jsi::Value*, size_t) -> jsi::Value {
+      auto flippedImage = [image imageWithHorizontallyFlippedOrientation];
+      auto newHostObject = std::make_shared<ImageHostObject>(flippedImage);
+      return jsi::Object::createFromHostObject(runtime, newHostObject);
+    };
+    return jsi::Function::createFromHostFunction(runtime, jsi::PropNameID::forUtf8(runtime, "flip"), 0, flip);
   }
   
   return jsi::Value::undefined();
