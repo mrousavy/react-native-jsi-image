@@ -23,6 +23,12 @@ export interface Image {
   readonly orientation: Orientation;
 
   /**
+   * The Image's PNG data.
+   *
+   * See [`pngData`](https://developer.apple.com/documentation/uikit/uiimage/1624096-pngdata) for more information.
+   */
+  readonly data: Uint8Array;
+  /**
    * Horizontally flips ("mirror") the Image and returns the new copy.
    */
   flip(): Image;

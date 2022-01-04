@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIImage.h>
 #import "ImageHostObject.h"
+#import "../cpp/JSI Utils/TypedArray.h"
 
 ImageHostObject::ImageHostObject(UIImage* image): image(image) {
   // ...
@@ -82,6 +83,14 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
     if (pngData == nil) {
       throw jsi::JSError(runtime, "Underlying Image has no data!");
     }
+    size_t length = static_cast<size_t>(pngData.length);
+    // Create Uint8Array
+    auto bitArray = TypedArray<TypedArrayKind::Uint8Array>(runtime, length);
+    // Get writeable ArrayBuffer
+    auto buffer = bitArray.getBuffer(runtime);
+    // Copy PNG Data to ArrayBuffer's buffer
+    memcpy(buffer.data(runtime), pngData.bytes, length);
+    return bitArray;
   }
   
   // -------- Functions --------
