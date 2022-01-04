@@ -8,7 +8,7 @@ const LINKING_ERROR =
   '- You are not using Expo managed workflow\n';
 
 // @ts-expect-error JSI unknown
-if (typeof global.jsiImageCreateFromFile !== 'function') {
+if (typeof global.jsiImageLoadFromFile !== 'function') {
   throw new Error(LINKING_ERROR);
 }
 
@@ -19,7 +19,17 @@ if (typeof global.jsiImageCreateFromFile !== 'function') {
  */
 export function loadImageFromFile(filePath: string): Image {
   // @ts-expect-error JSI unknown
-  return global.jsiImageCreateFromFile(filePath);
+  return global.jsiImageLoadFromFile(filePath);
+}
+
+/**
+ * Loads an Image from the given URL.
+ * @param url The URL or URI to the Image.
+ * @returns An in-memory Image
+ */
+export function loadImageFromUrl(url: string): Promise<Image> {
+  // @ts-expect-error JSI unknown
+  return global.jsiImageLoadFromUrl(url);
 }
 
 export * from './Image';

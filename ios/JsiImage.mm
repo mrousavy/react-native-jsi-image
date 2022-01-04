@@ -25,18 +25,22 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-static void install(jsi::Runtime & jsiRuntime)
++ (dispatch_queue_t)queue {
+  return dispatch_queue_create("jsi-image-loader-queue", DISPATCH_QUEUE_CONCURRENT);
+}
+
+static void install(jsi::Runtime& jsiRuntime)
 {
-  // jsiImageCreateFromFile(filePath)
-  auto jsiImageCreateFromFile = jsi::Function::createFromHostFunction(jsiRuntime,
-                                                                      jsi::PropNameID::forAscii(jsiRuntime, "jsiImageCreateFromFile"),
-                                                                      1,
-                                                                      [](jsi::Runtime& runtime,
-                                                                         const jsi::Value& thisValue,
-                                                                         const jsi::Value* arguments,
-                                                                         size_t count) -> jsi::Value {
+  // jsiImageLoadFromFile(filePath)
+  auto jsiImageLoadFromFile = jsi::Function::createFromHostFunction(jsiRuntime,
+                                                                    jsi::PropNameID::forAscii(jsiRuntime, "jsiImageLoadFromFile"),
+                                                                    1,
+                                                                    [](jsi::Runtime& runtime,
+                                                                       const jsi::Value& thisValue,
+                                                                       const jsi::Value* arguments,
+                                                                       size_t count) -> jsi::Value {
     if (count != 1) {
-      throw jsi::JSError(runtime, "jsiImageCreateFromFile(..) expects one argument (string)!");
+      throw jsi::JSError(runtime, "jsiImageLoadFromFile(..) expects one argument (string)!");
     }
     auto string = arguments[0].asString(runtime).utf8(runtime);
     auto path = [NSString stringWithUTF8String:string.c_str()];
@@ -50,7 +54,57 @@ static void install(jsi::Runtime & jsiRuntime)
     auto instance = std::make_shared<ImageHostObject>(image);
     return jsi::Object::createFromHostObject(runtime, instance);
   });
-  jsiRuntime.global().setProperty(jsiRuntime, "jsiImageCreateFromFile", std::move(jsiImageCreateFromFile));
+  jsiRuntime.global().setProperty(jsiRuntime, "jsiImageLoadFromFile", std::move(jsiImageLoadFromFile));
+  
+  
+  // jsiImageLoadFromUrl(filePath)
+  auto jsiImageLoadFromUrl = jsi::Function::createFromHostFunction(jsiRuntime,
+                                                                   jsi::PropNameID::forAscii(jsiRuntime, "jsiImageLoadFromUrl"),
+                                                                   1,
+                                                                   [](jsi::Runtime& runtime,
+                                                                      const jsi::Value& thisValue,
+                                                                      const jsi::Value* arguments,
+                                                                      size_t count) -> jsi::Value {
+    if (count != 1) {
+      throw jsi::JSError(runtime, "jsiImageLoadFromUrl(..) expects one argument (string)!");
+    }
+    auto string = arguments[0].asString(runtime).utf8(runtime);
+    
+    auto promiseCtor = runtime.global().getPropertyAsFunction(runtime, "Promise");
+    
+    auto runPromise = jsi::Function::createFromHostFunction(runtime,
+                                                            jsi::PropNameID::forUtf8(runtime, "jsiLoadImageFromUrl"),
+                                                            2,
+                                                            [string](jsi::Runtime& runtime,
+                                                                     const jsi::Value& thisValue,
+                                                                     const jsi::Value* arguments,
+                                                                     size_t count) -> jsi::Value {
+      auto resolveLocal = arguments[0].asObject(runtime).asFunction(runtime);
+      auto resolve = std::make_shared<jsi::Function>(std::move(resolveLocal));
+      auto rejectLocal = arguments[1].asObject(runtime).asFunction(runtime);
+      auto reject = std::make_shared<jsi::Function>(std::move(rejectLocal));
+      
+      dispatch_async([JsiImage queue], ^{
+        auto url = [NSString stringWithUTF8String:string.c_str()];
+        auto image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:url]]];
+        if (image == nil) {
+          auto message = "Failed to load image from URL \"" + string + "\"!";
+          auto error = jsi::JSError(runtime, message);
+          reject->call(runtime, error.value());
+          return;
+        }
+        
+        auto instance = std::make_shared<ImageHostObject>(image);
+        resolve->call(runtime, jsi::Object::createFromHostObject(runtime, instance));
+      });
+      
+      return jsi::Value::undefined();
+    });
+    
+    // return new Promise((resolve, reject) => ...)
+    return promiseCtor.callAsConstructor(runtime, runPromise);
+  });
+  jsiRuntime.global().setProperty(jsiRuntime, "jsiImageLoadFromUrl", std::move(jsiImageLoadFromUrl));
 }
 
 - (void)setup

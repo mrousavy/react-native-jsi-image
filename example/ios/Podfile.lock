@@ -187,6 +187,7 @@ PODS:
   - React-jsinspector (0.63.4)
   - react-native-jsi-image (0.1.0):
     - React-Core
+    - ReactCommon
   - React-RCTActionSheet (0.63.4):
     - React-Core/RCTActionSheetHeaders (= 0.63.4)
   - React-RCTAnimation (0.63.4):
@@ -239,6 +240,18 @@ PODS:
     - React-Core/RCTVibrationHeaders (= 0.63.4)
     - React-jsi (= 0.63.4)
     - ReactCommon/turbomodule/core (= 0.63.4)
+  - ReactCommon (0.63.4):
+    - ReactCommon/turbomodule (= 0.63.4)
+  - ReactCommon/turbomodule (0.63.4):
+    - DoubleConversion
+    - Folly (= 2020.01.13.00)
+    - glog
+    - React-callinvoker (= 0.63.4)
+    - React-Core (= 0.63.4)
+    - React-cxxreact (= 0.63.4)
+    - React-jsi (= 0.63.4)
+    - ReactCommon/turbomodule/core (= 0.63.4)
+    - ReactCommon/turbomodule/samples (= 0.63.4)
   - ReactCommon/turbomodule/core (0.63.4):
     - DoubleConversion
     - Folly (= 2020.01.13.00)
@@ -247,6 +260,15 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
+  - ReactCommon/turbomodule/samples (0.63.4):
+    - DoubleConversion
+    - Folly (= 2020.01.13.00)
+    - glog
+    - React-callinvoker (= 0.63.4)
+    - React-Core (= 0.63.4)
+    - React-cxxreact (= 0.63.4)
+    - React-jsi (= 0.63.4)
+    - ReactCommon/turbomodule/core (= 0.63.4)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -357,7 +379,7 @@ SPEC CHECKSUMS:
   React-jsi: a0418934cf48f25b485631deb27c64dc40fb4c31
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
-  react-native-jsi-image: a5e3c525e03d128ce75f7ece8186d8307a989b81
+  react-native-jsi-image: 1ffedf549ab9b2fd62c18ca052024a6918e5a40a
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
   React-RCTBlob: a97d378b527740cc667e03ebfa183a75231ab0f0

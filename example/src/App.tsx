@@ -1,15 +1,24 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { Image, loadImageFromFile } from 'react-native-jsi-image';
+import {
+  Image,
+  loadImageFromFile,
+  loadImageFromUrl,
+} from 'react-native-jsi-image';
 
 export default function App() {
   React.useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       console.log('loading image from file...');
-      const image = loadImageFromFile('');
+      const image = await loadImageFromUrl(
+        'https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/test.png'
+      );
       console.log('loaded image from file!');
+
       console.log(`image: ${image}`);
+      console.log(`orientation: ${image.orientation}`);
+      console.log(`flipped: ${image.flip().orientation}`);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
