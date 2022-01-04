@@ -55,28 +55,28 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
   // -------- Props --------
   
   if (propName == "width") {
-    return jsi::Value((double) _image.size.width);
+    return jsi::Value((double) image.size.width);
   }
   
   if (propName == "height") {
-    return jsi::Value((double) _image.size.height);
+    return jsi::Value((double) image.size.height);
   }
   
   if (propName == "scale") {
-    return jsi::Value((double) _image.scale);
+    return jsi::Value((double) image.scale);
   }
   
   if (propName == "orientation") {
-    NSString* string = imageOrientationToString(_image.imageOrientation);
+    NSString* string = imageOrientationToString(image.imageOrientation);
     return jsi::String::createFromUtf8(runtime, string.UTF8String);
   }
   
   if (propName == "isFlipped") {
-    return jsi::Value(isFlipped(_image.imageOrientation));
+    return jsi::Value(isFlipped(image.imageOrientation));
   }
   
   if (propName == "data") {
-    auto pngData = UIImagePNGRepresentation(_image);
+    auto pngData = UIImagePNGRepresentation(image);
     if (pngData == nil) {
       throw jsi::JSError(runtime, "Underlying Image has no data!");
     }
@@ -97,7 +97,7 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
                         const jsi::Value&,
                         const jsi::Value*,
                         size_t) -> jsi::Value {
-      auto flippedImage = [_image imageWithHorizontallyFlippedOrientation];
+      auto flippedImage = [image imageWithHorizontallyFlippedOrientation];
       auto newHostObject = std::make_shared<ImageHostObject>(flippedImage, _promiseVendor);
       return jsi::Object::createFromHostObject(runtime, newHostObject);
     };
@@ -106,6 +106,8 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
                                                  0,
                                                  flip);
   }
+  
+  
   
   if (propName == "save") {
     auto flip = [this] (jsi::Runtime& runtime,
@@ -123,11 +125,11 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           if ([path.lowercaseString hasSuffix:@".png"]) {
             // Write .png file
-            [UIImagePNGRepresentation(_image) writeToFile:path atomically:YES];
+            [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
             promise->resolve(jsi::Value::undefined());
           } else if ([path.lowercaseString hasSuffix:@".jpg"]) {
             // Write .jpg file
-            [UIImageJPEGRepresentation(_image, 1.0) writeToFile:path atomically:YES];
+            [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
             promise->resolve(jsi::Value::undefined());
           } else {
             // Unknown file type!
@@ -148,8 +150,8 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
                             const jsi::Value&,
                             const jsi::Value*,
                             size_t) -> jsi::Value {
-      auto width = _image.size.width;
-      auto height = _image.size.height;
+      auto width = image.size.width;
+      auto height = image.size.height;
       
       NSMutableString* string = [NSMutableString stringWithFormat:@"%f x %f Photo", width, height];
       return jsi::String::createFromUtf8(runtime, string.UTF8String);

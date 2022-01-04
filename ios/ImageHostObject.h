@@ -16,13 +16,15 @@ using namespace facebook;
 
 class JSI_EXPORT ImageHostObject: public jsi::HostObject {
 public:
-  ImageHostObject(UIImage* image, std::shared_ptr<JsiPromise::PromiseVendor> promiseVendor): _image(image), _promiseVendor(promiseVendor) { };
+  ImageHostObject(UIImage* image, std::shared_ptr<JsiPromise::PromiseVendor> promiseVendor): image(image), _promiseVendor(promiseVendor) { };
 
 public:
   jsi::Value get(jsi::Runtime&, const jsi::PropNameID& name) override;
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& rt) override;
 
+public:
+  UIImage* image;
+  
 private:
-  UIImage* _image;
   std::shared_ptr<JsiPromise::PromiseVendor> _promiseVendor;
 };
