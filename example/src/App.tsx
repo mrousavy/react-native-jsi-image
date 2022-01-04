@@ -1,18 +1,22 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-jsi-image';
+import { Image, loadImageFromFile } from 'react-native-jsi-image';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
   React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+    const interval = setInterval(() => {
+      console.log('loading image from file...');
+      const image = loadImageFromFile('');
+      console.log('loaded image from file!');
+      console.log(`image: ${image}`);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Hello!</Text>
     </View>
   );
 }

@@ -32,4 +32,8 @@ export interface Image {
    * Horizontally flips ("mirror") the Image and returns the new copy.
    */
   flip(): Image;
+  /**
+   * Returns a string-representation of the Image useful for debugging.
+   */
+  toString(): string;
 }
