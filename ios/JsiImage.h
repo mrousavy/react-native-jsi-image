@@ -12,4 +12,6 @@
 
 @interface JsiImage : NSObject <RCTBridgeModule>
 
+@property (nonatomic, assign) BOOL setBridgeOnMainQueue;
+
 @end
