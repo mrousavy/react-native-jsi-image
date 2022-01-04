@@ -210,8 +210,9 @@ PODS:
   - React-logger (0.66.4):
     - glog
   - react-native-jsi-image (0.1.0):
+    - React
+    - React-callinvoker
     - React-Core
-    - ReactCommon
   - React-perflogger (0.66.4)
   - React-RCTActionSheet (0.66.4):
     - React-Core/RCTActionSheetHeaders (= 0.66.4)
@@ -267,24 +268,6 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.66.4)
   - React-runtimeexecutor (0.66.4):
     - React-jsi (= 0.66.4)
-  - ReactCommon (0.66.4):
-    - React-logger (= 0.66.4)
-    - ReactCommon/react_debug_core (= 0.66.4)
-    - ReactCommon/turbomodule (= 0.66.4)
-  - ReactCommon/react_debug_core (0.66.4):
-    - React-logger (= 0.66.4)
-  - ReactCommon/turbomodule (0.66.4):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2021.06.28.00-v2)
-    - React-callinvoker (= 0.66.4)
-    - React-Core (= 0.66.4)
-    - React-cxxreact (= 0.66.4)
-    - React-jsi (= 0.66.4)
-    - React-logger (= 0.66.4)
-    - React-perflogger (= 0.66.4)
-    - ReactCommon/turbomodule/core (= 0.66.4)
-    - ReactCommon/turbomodule/samples (= 0.66.4)
   - ReactCommon/turbomodule/core (0.66.4):
     - DoubleConversion
     - glog
@@ -295,17 +278,6 @@ PODS:
     - React-jsi (= 0.66.4)
     - React-logger (= 0.66.4)
     - React-perflogger (= 0.66.4)
-  - ReactCommon/turbomodule/samples (0.66.4):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2021.06.28.00-v2)
-    - React-callinvoker (= 0.66.4)
-    - React-Core (= 0.66.4)
-    - React-cxxreact (= 0.66.4)
-    - React-jsi (= 0.66.4)
-    - React-logger (= 0.66.4)
-    - React-perflogger (= 0.66.4)
-    - ReactCommon/turbomodule/core (= 0.66.4)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -430,7 +402,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 94ce921e1d8ce7023366873ec371f3441383b396
   React-jsinspector: d0374f7509d407d2264168b6d0fad0b54e300b85
   React-logger: 933f80c97c633ee8965d609876848148e3fef438
-  react-native-jsi-image: 1ffedf549ab9b2fd62c18ca052024a6918e5a40a
+  react-native-jsi-image: 5895636421e818523d4ca322f49b593620f37268
   React-perflogger: 93075d8931c32cd1fce8a98c15d2d5ccc4d891bd
   React-RCTActionSheet: 7d3041e6761b4f3044a37079ddcb156575fb6d89
   React-RCTAnimation: 743e88b55ac62511ae5c2e22803d4f503f2a3a13

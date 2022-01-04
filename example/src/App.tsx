@@ -17,8 +17,17 @@ export default function App() {
       console.log('loaded image from file!');
 
       console.log(`image: ${image}`);
-      console.log(`orientation: ${image.orientation}`);
-      console.log(`flipped: ${image.flip().orientation}`);
+      console.log(
+        `orientation: ${image.orientation} (${
+          image.isFlipped ? 'flipped' : 'normal'
+        })`
+      );
+      const flipped = image.flip();
+      console.log(
+        `flipped: ${flipped.orientation} (${
+          flipped.isFlipped ? 'flipped' : 'normal'
+        })`
+      );
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -35,6 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   box: {
     width: 60,
