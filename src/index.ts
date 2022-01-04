@@ -17,7 +17,7 @@ if (typeof global.jsiImageLoadFromFile !== 'function') {
  * @param filePath The file path of the image file.
  * @returns An in-memory Image
  */
-export function loadImageFromFile(filePath: string): Image {
+export function loadImageFromFile(filePath: string): Promise<Image> {
   // @ts-expect-error JSI unknown
   return global.jsiImageLoadFromFile(filePath);
 }

@@ -39,24 +39,55 @@ static void install(jsi::Runtime& jsiRuntime, std::shared_ptr<react::CallInvoker
   auto jsiImageLoadFromFile = jsi::Function::createFromHostFunction(jsiRuntime,
                                                                     jsi::PropNameID::forAscii(jsiRuntime, "jsiImageLoadFromFile"),
                                                                     1,
-                                                                    [](jsi::Runtime& runtime,
-                                                                       const jsi::Value& thisValue,
-                                                                       const jsi::Value* arguments,
-                                                                       size_t count) -> jsi::Value {
+                                                                    [callInvoker](jsi::Runtime& runtime,
+                                                                                  const jsi::Value& thisValue,
+                                                                                  const jsi::Value* arguments,
+                                                                                  size_t count) -> jsi::Value {
     if (count != 1) {
       throw jsi::JSError(runtime, "jsiImageLoadFromFile(..) expects one argument (string)!");
     }
     auto string = arguments[0].asString(runtime).utf8(runtime);
-    auto path = [NSString stringWithUTF8String:string.c_str()];
     
-    auto image = [[UIImage alloc] initWithContentsOfFile:path];
-    if (image == nil) {
-      auto message = "Failed to load image from path \"" + string + "\"!";
-      throw jsi::JSError(runtime, message);
-    }
+    auto promiseCtor = runtime.global().getPropertyAsFunction(runtime, "Promise");
     
-    auto instance = std::make_shared<ImageHostObject>(image);
-    return jsi::Object::createFromHostObject(runtime, instance);
+    auto runPromise = jsi::Function::createFromHostFunction(runtime,
+                                                            jsi::PropNameID::forUtf8(runtime, "jsiImageLoadFromFile"),
+                                                            2,
+                                                            [callInvoker, string](jsi::Runtime& runtime,
+                                                                                  const jsi::Value& thisValue,
+                                                                                  const jsi::Value* arguments,
+                                                                                  size_t count) -> jsi::Value {
+      auto resolveLocal = arguments[0].asObject(runtime).asFunction(runtime);
+      auto resolve = std::make_shared<jsi::Function>(std::move(resolveLocal));
+      auto rejectLocal = arguments[1].asObject(runtime).asFunction(runtime);
+      auto reject = std::make_shared<jsi::Function>(std::move(rejectLocal));
+      
+      dispatch_async([JsiImage queue], ^{
+        auto path = [NSString stringWithUTF8String:string.c_str()];
+        
+        auto image = [[UIImage alloc] initWithContentsOfFile:path];
+        if (image == nil) {
+          auto message = "Failed to load image from path \"" + string + "\"!";
+          auto error = jsi::JSError(runtime, message);
+          callInvoker->invokeAsync([reject, &runtime, error]() -> void {
+            // Error! Failed to load from URL.
+            reject->call(runtime, error.value());
+          });
+          return;
+        }
+        
+        auto instance = std::make_shared<ImageHostObject>(image);
+        callInvoker->invokeAsync([resolve, &runtime, instance]() -> void {
+          // success! Image loaded.
+          resolve->call(runtime, jsi::Object::createFromHostObject(runtime, instance));
+        });
+      });
+      
+      return jsi::Value::undefined();
+    });
+    
+    // return new Promise((resolve, reject) => ...)
+    return promiseCtor.callAsConstructor(runtime, runPromise);
   });
   jsiRuntime.global().setProperty(jsiRuntime, "jsiImageLoadFromFile", std::move(jsiImageLoadFromFile));
   
