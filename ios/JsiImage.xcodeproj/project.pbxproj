@@ -29,6 +29,7 @@
 		B8B1995C27843EC400E74AEA /* ImageHostObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageHostObject.h; sourceTree = "<group>"; };
 		B8B1995D2784456A00E74AEA /* JsiImage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = JsiImage.mm; sourceTree = "<group>"; };
 		B8B1995F2784457900E74AEA /* JsiImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsiImage.h; sourceTree = "<group>"; };
+		B8B1996027845A2E00E74AEA /* cpp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = cpp; path = ../cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +58,7 @@
 				B8B1995D2784456A00E74AEA /* JsiImage.mm */,
 				B8B1995C27843EC400E74AEA /* ImageHostObject.h */,
 				B8B1995A27843EBD00E74AEA /* ImageHostObject.mm */,
+				B8B1996027845A2E00E74AEA /* cpp */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
