@@ -9,8 +9,11 @@
 #import "JsiImage.h"
 #import "ImageHostObject.h"
 
+#import <React/RCTBridge.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <React/RCTBridge+Private.h>
-#import <React/RCTUtils.h>
+#import <ReactCommon/CallInvoker.h>
+
 #import <jsi/jsi.h>
 
 using namespace facebook;
@@ -118,7 +121,7 @@ static void install(jsi::Runtime& jsiRuntime)
     return;
   }
   
-  install(*(jsi::Runtime *)cxxBridge.runtime);
+  install(*(jsi::Runtime *)cxxBridge.runtime, self.bridge.jsCallInvoker);
 }
 
 - (void)setBridge:(RCTBridge *)bridge
