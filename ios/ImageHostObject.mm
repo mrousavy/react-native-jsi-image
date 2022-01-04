@@ -117,7 +117,7 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
       }
       auto string = arguments[0].asString(runtime).utf8(runtime);
       
-      _promiseVendor->createPromise([this, string](std::shared_ptr<JsiPromise::Promise> promise) -> void {
+      auto promise = _promiseVendor->createPromise([this, string](std::shared_ptr<JsiPromise::Promise> promise) -> void {
         NSString* path = [NSString stringWithUTF8String:string.c_str()];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -135,9 +135,7 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
           }
         });
       });
-      auto flippedImage = [_image imageWithHorizontallyFlippedOrientation];
-      auto newHostObject = std::make_shared<ImageHostObject>(flippedImage, _promiseVendor);
-      return jsi::Object::createFromHostObject(runtime, newHostObject);
+      return promise;
     };
     return jsi::Function::createFromHostFunction(runtime,
                                                  jsi::PropNameID::forUtf8(runtime, "flip"),
