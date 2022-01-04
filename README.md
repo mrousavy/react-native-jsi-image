@@ -1,5 +1,7 @@
 # 🖼️ react-native-jsi-image
 
+**🏗️ This library is work in progress! 🏗️**
+
 **A writeable in-memory Image JSI Host Object.**
 
 JSI-Image is a modern library that provides Image primitives for the native iOS and Android Platforms, neatly packaged together in one single fast JavaScript API.
