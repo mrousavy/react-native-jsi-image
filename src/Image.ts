@@ -10,6 +10,10 @@ export interface Image {
    */
   readonly height: number;
   /**
+   * The Image's scale factor. For most images, this is `1.0`.
+   */
+  readonly scale: number;
+  /**
    * Whether the image is horizontally flipped ("mirrored"), or not.
    */
   readonly isFlipped: boolean;

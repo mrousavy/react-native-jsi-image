@@ -73,6 +73,10 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
     return jsi::Value((double) image.size.height);
   }
   
+  if (propName == "scale") {
+    return jsi::Value((double) image.scale);
+  }
+  
   if (propName == "orientation") {
     NSString* string = imageOrientationToString(image.imageOrientation);
     return jsi::String::createFromUtf8(runtime, string.UTF8String);
