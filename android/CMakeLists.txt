@@ -7,9 +7,11 @@ add_library(jsi-image
             SHARED
             cpp-adapter.cpp
             JsiImage.cpp
+            ../cpp/TypedArray/TypedArray.cpp
 )
 
 include_directories(
                     ./android
+                    ../cpp
                     # RN JSI sources
 )

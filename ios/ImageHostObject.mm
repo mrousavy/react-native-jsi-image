@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIImage.h>
 #import "ImageHostObject.h"
 
 ImageHostObject::ImageHostObject(UIImage* image): image(image) {
@@ -77,7 +78,10 @@ jsi::Value ImageHostObject::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
   }
   
   if (propName == "data") {
-    
+    auto pngData = UIImagePNGRepresentation(image);
+    if (pngData == nil) {
+      throw jsi::JSError(runtime, "Underlying Image has no data!");
+    }
   }
   
   // -------- Functions --------

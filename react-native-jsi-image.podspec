@@ -17,13 +17,15 @@ Pod::Spec.new do |s|
   # Note how this does not include headers, since those can nameclash.
   s.source_files = [
     "ios/**/*.{m,mm}",
+    "cpp/**/*.{c,cpp}",
     "ios/ImageHostObject.h"
   ]
   # Any private headers that are not globally unique should be mentioned here.
   # Otherwise there will be a nameclash, since CocoaPods flattens out any header directories
   # See https://github.com/firebase/firebase-ios-sdk/issues/4035 for more details.
   s.preserve_paths = [
-    'ios/**/*.h'
+    'ios/**/*.h',
+    'cpp/**/*.h'
   ]
 
   s.dependency "React-Core"
