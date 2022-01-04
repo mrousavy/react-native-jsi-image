@@ -11,13 +11,4 @@ if (!global.__isJsiImageInstalled) {
   throw new Error(LINKING_ERROR);
 }
 
-export interface Image {
-  /**
-   * The Image's width in pixels.
-   */
-  readonly width: number;
-  /**
-   * The Image's height in pixels.
-   */
-  readonly height: number;
-}
+export * from './Image';
