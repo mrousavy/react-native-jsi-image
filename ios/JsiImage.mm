@@ -13,6 +13,7 @@
 #import <ReactCommon/RCTTurboModule.h>
 #import <React/RCTBridge+Private.h>
 #import <ReactCommon/CallInvoker.h>
+#import <React/RCTUtils.h>
 
 #import <jsi/jsi.h>
 
