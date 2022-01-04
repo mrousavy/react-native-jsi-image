@@ -1,6 +1,6 @@
 {
   "name": "react-native-jsi-image",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A writeable in-memory Image JSI Host Object",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
