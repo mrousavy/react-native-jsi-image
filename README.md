@@ -113,6 +113,65 @@ image = rotateImageCorrectly(image)
 await image.save('file:///tmp/temp-image.png') // or .jpg
 ```
 
+### For Library Developers
+
+To use JSI-Image in your native library, your functions must be JSI functions.
+
+#### Accept `Image` Parameter
+
+In your JSI Module:
+
+```cpp
+#include <JsiImage/ImageHostObject.h>
+
+// ...
+
+jsi::Value myFunction(jsi::Runtime& runtime,
+                      jsi::Value& thisArg,
+                      jsi::Value* arguments,
+                      size_t count) {
+  auto imageHostObject = arguments[0].asObject(runtime).asHostObject<ImageHostObject>(runtime);
+  auto uiImage = imageHostObject->image;
+  // use uiImage here
+}
+```
+
+In your TypeScript declaration:
+
+```ts
+import { Image } from 'react-native-jsi-image'
+
+export function myFunction(image: Image): void
+```
+
+#### Return `Image` from your native module
+
+In your JSI Module:
+
+```cpp
+#include <JsiImage/ImageHostObject.h>
+
+// ...
+
+jsi::Value myFunction(jsi::Runtime& runtime,
+                      jsi::Value& thisArg,
+                      jsi::Value* arguments,
+                      size_t count) {
+  UIImage* image = // ...
+
+  auto instance = std::make_shared<ImageHostObject>(image, promiseVendor);
+  return jsi::Object::createFromHostObject(runtime, instance);
+}
+```
+
+In your TypeScript declaration:
+
+```ts
+import { Image } from 'react-native-jsi-image'
+
+export function myFunction(): Image
+```
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
