@@ -25,11 +25,6 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-static NSString* jsiStringToNSString(jsi::String value, jsi::Runtime& runtime) {
-  std::string string = value.utf8(runtime);
-  return [NSString stringWithUTF8String:string.c_str()];
-}
-
 static void install(jsi::Runtime & jsiRuntime)
 {
   // jsiImageCreateFromFile(filePath)
@@ -43,9 +38,15 @@ static void install(jsi::Runtime & jsiRuntime)
     if (count != 1) {
       throw jsi::JSError(runtime, "jsiImageCreateFromFile(..) expects one argument (string)!");
     }
-    NSString* path = jsiStringToNSString(arguments[0].asString(runtime), runtime);
+    auto string = arguments[0].asString(runtime).utf8(runtime);
+    auto path = [NSString stringWithUTF8String:string.c_str()];
     
     auto image = [[UIImage alloc] initWithContentsOfFile:path];
+    if (image == nil) {
+      auto message = "Failed to load image from path \"" + string + "\"!";
+      throw jsi::JSError(runtime, message);
+    }
+    
     auto instance = std::make_shared<ImageHostObject>(image);
     return jsi::Object::createFromHostObject(runtime, instance);
   });
